@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.sql.Connection;
 import java.sql.SQLException;
+import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import modelo.Caneta;
@@ -28,6 +29,29 @@ public class frmPrincipal extends javax.swing.JFrame {
             lblMensagem.setText("Sem conexão com o BD!");
             Logger.getLogger(frmPrincipal.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        
+
+    public class CustomRenderer extends JLabel implements TableCellRenderer {
+
+        String formattedString;
+        DefaultTableCellRenderer tableRenderer = new DefaultTableCellRenderer();
+
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                boolean isSelected, boolean hasFocus, int row, int column) {
+            DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+            Component c = renderer.getTableCellRendererComponent(
+                    table, value, isSelected, hasFocus, row, column);
+
+            if (value != null && (value instanceof Double)) {
+                String s = String.format("%.02f", value);
+                c = renderer.getTableCellRendererComponent(
+                        table, s, isSelected, hasFocus, row, column);
+                ((JLabel) c).setHorizontalAlignment(SwingConstants.RIGHT);
+            }
+            return c;
+        }
+    }
     }
     
     private void preencherTabela() {
@@ -44,6 +68,47 @@ public class frmPrincipal extends javax.swing.JFrame {
             }
         } catch (Exception e) {
             throw e;
+        }
+    }
+    
+    private void apagar() {
+        try {
+            Integer codigo = (Integer) modelo.getValueAt(tblCaneta.getSelectedRow(), 0);
+
+            int linha = canetaDAO.apagar(codigo);
+            if (linha > 0) {
+                modelo.removeRow(tblCaneta.getSelectedRow());
+                JOptionPane.showMessageDialog(this, "Item excluído com sucesso!");
+            } else {
+                JOptionPane.showMessageDialog(this, "Erro ao excluir.");
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Por favor, selecionar uma linha da tabela");
+        } 
+    }
+    
+    private void editar() {
+        try {
+            Integer codigo = (Integer) modelo.getValueAt(tblCaneta.getSelectedRow(), 0);
+            String modeloCaneta = (String) modelo.getValueAt(tblCaneta.getSelectedRow(), 1);
+            String cor = (String) modelo.getValueAt(tblCaneta.getSelectedRow(), 2);
+            Float ponta = (Float) modelo.getValueAt(tblCaneta.getSelectedRow(), 3);
+            int carga = (Integer) modelo.getValueAt(tblCaneta.getSelectedRow(), 4);
+            Boolean tampada = (Boolean) modelo.getValueAt(tblCaneta.getSelectedRow(), 5);
+           
+            Caneta caneta = new Caneta();
+            caneta.setCodigo(codigo);
+            caneta.setModelo(modeloCaneta);
+            caneta.setCor(cor);
+            caneta.setPonta(ponta);
+            caneta.setCarga(carga);
+            caneta.setTampada(tampada);
+
+            new frmCaneta(caneta).setVisible(true);
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Por favor, selecionar uma linha da tabela");
         }
     }
 
@@ -110,12 +175,32 @@ public class frmPrincipal extends javax.swing.JFrame {
         }
 
         btnInserir.setText("Inserir");
+        btnInserir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnInserirActionPerformed(evt);
+            }
+        });
 
         btnEditar.setText("Editar");
+        btnEditar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditarActionPerformed(evt);
+            }
+        });
 
         btnApagar.setText("Apagar");
+        btnApagar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnApagarActionPerformed(evt);
+            }
+        });
 
         btnSair.setText("Sair");
+        btnSair.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSairActionPerformed(evt);
+            }
+        });
 
         lblMensagem.setForeground(new java.awt.Color(255, 51, 51));
         lblMensagem.setText(" ");
@@ -169,6 +254,27 @@ public class frmPrincipal extends javax.swing.JFrame {
     private void formWindowGainedFocus(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowGainedFocus
         preencherTabela();
     }//GEN-LAST:event_formWindowGainedFocus
+
+    private void btnApagarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnApagarActionPerformed
+        apagar();
+    }//GEN-LAST:event_btnApagarActionPerformed
+
+    private void btnInserirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInserirActionPerformed
+        new frmCaneta(null).setVisible(true);
+    }//GEN-LAST:event_btnInserirActionPerformed
+
+    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
+        editar();
+    }//GEN-LAST:event_btnEditarActionPerformed
+
+    private void btnSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSairActionPerformed
+        Object[] opcao = {"Não", "Sim"};
+        int opcaoSelecionada = JOptionPane.showOptionDialog(this, "Deseja realmente sair do sistema?", "Aviso",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, opcao, opcao[0]);
+        if (opcaoSelecionada == 1) {
+            System.exit(0);
+        }
+    }//GEN-LAST:event_btnSairActionPerformed
 
     /**
      * @param args the command line arguments
