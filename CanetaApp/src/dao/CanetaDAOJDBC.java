@@ -1,11 +1,11 @@
 
 package dao;
 
-import conexao.ConexaoMySQL;
 import java.util.ArrayList;
 import java.util.List;
 import modelo.Caneta;
 import java.sql.*;
+import modelo.Modelo;
 
 
 public class CanetaDAOJDBC implements CanetaDAO {
@@ -18,21 +18,13 @@ public class CanetaDAOJDBC implements CanetaDAO {
     public int inserir(Caneta caneta) {
         StringBuilder sqlBuilder = new StringBuilder();
         sqlBuilder
-                .append("INSERT INTO caneta(modelo, cor, ponta, carga, tampada) ")
+                .append("INSERT INTO caneta(codigo_modelo, cor, ponta, carga, tampada) ")
                 .append("VALUES (?, ?, ?, ?, ?)");
      
         String insert = sqlBuilder.toString();
         int linha = 0;
-        try {
-            conexao = ConexaoMySQL.getConexao();
-
-            sql = (PreparedStatement) conexao.prepareStatement(insert);
-            sql.setString(1, caneta.getModelo());
-            sql.setString(2, caneta.getCor());
-            sql.setFloat(3, caneta.getPonta());
-            sql.setInt(4, caneta.getCarga());
-            sql.setBoolean(5, caneta.isTampada());
-            linha = sql.executeUpdate();
+        try {          
+            linha = DAOGenerico.executarComando(insert, caneta.getModelo().getCodigo(), caneta.getCor(), caneta.getPonta(), caneta.getCarga(), caneta.isTampada());
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -47,7 +39,7 @@ public class CanetaDAOJDBC implements CanetaDAO {
         StringBuilder sqlBuilder = new StringBuilder();
         sqlBuilder
                 .append("UPDATE caneta SET ")
-                .append("modelo = ?,")
+                .append("codigo_modelo = ?,")
                 .append("cor = ?, ")
                 .append("ponta = ?,")
                 .append("carga = ?,")
@@ -57,16 +49,8 @@ public class CanetaDAOJDBC implements CanetaDAO {
         String update = sqlBuilder.toString();
         int linha = 0;
         try {
-            conexao = ConexaoMySQL.getConexao();
-
-            sql = (PreparedStatement) conexao.prepareStatement(update);
-            sql.setString(1, caneta.getModelo());
-            sql.setString(2, caneta.getCor());
-            sql.setFloat(3, caneta.getPonta());
-            sql.setInt(4, caneta.getCarga());
-            sql.setBoolean(5, caneta.isTampada());
-            sql.setInt(6, caneta.getCodigo());
-            linha = sql.executeUpdate();
+            
+            linha = DAOGenerico.executarComando(update, caneta.getModelo().getCodigo(), caneta.getCor(), caneta.getPonta(), caneta.getCarga(), caneta.isTampada(), caneta.getCodigo());
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -85,12 +69,8 @@ public class CanetaDAOJDBC implements CanetaDAO {
         
         String delete = sqlBuilder.toString();
         int linha = 0;
-        try {
-            conexao = ConexaoMySQL.getConexao();
-
-            sql = (PreparedStatement) conexao.prepareStatement(delete);
-            sql.setInt(1, codigo);
-            linha = sql.executeUpdate();
+        try {         
+            linha = DAOGenerico.executarComando(delete, codigo);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -102,27 +82,34 @@ public class CanetaDAOJDBC implements CanetaDAO {
 
     @Override
     public List<Caneta> listar() {
-        String select = "SELECT * FROM caneta";
+        StringBuilder sqlBuilder = new StringBuilder();
+        sqlBuilder
+                .append("SELECT c.codigo, c.codigo_modelo, m.descricao, c.cor, c.ponta, c.carga, c.tampada ")
+                .append("FROM caneta c ")
+                .append("INNER JOIN modelo m ON (c.codigo_modelo = m.codigo)");
+        String select = sqlBuilder.toString();
 
         List<Caneta> canetas = new ArrayList<Caneta>();
 
-        try {
-            conexao = ConexaoMySQL.getConexao();
+        try {       
+            rset = DAOGenerico.executarConsulta(select);
 
-            sql = (PreparedStatement) conexao.prepareStatement(select);
-
-            rset = sql.executeQuery();
 
             while (rset.next()) {
 
                 Caneta caneta = new Caneta();
-
-                caneta.setCodigo(rset.getInt("codigo"));
-                caneta.setModelo(rset.getString("modelo"));
-                caneta.setCor(rset.getString("cor"));
-                caneta.setPonta(rset.getFloat("ponta"));
-                caneta.setCarga(rset.getInt("carga"));
-                caneta.setTampada(rset.getBoolean("tampada"));
+                caneta.setCodigo(rset.getInt("c.codigo"));
+                
+                caneta.setCor(rset.getString("c.cor"));
+                caneta.setPonta(rset.getFloat("c.ponta"));
+                caneta.setCarga(rset.getInt("c.carga"));
+                caneta.setTampada(rset.getBoolean("c.tampada"));
+                
+                Modelo modelo = new Modelo();
+                modelo.setCodigo(rset.getInt("c.codigo_modelo"));
+                modelo.setDescricao(rset.getString("m.descricao"));
+                
+                caneta.setModelo(modelo);
 
                 canetas.add(caneta);
 

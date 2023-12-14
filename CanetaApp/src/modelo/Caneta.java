@@ -6,7 +6,7 @@ import java.util.Objects;
 
 public class Caneta {
     private int codigo;
-    private String modelo;
+    private Modelo modelo;
     private String cor;
     private float ponta;
     private int carga;
@@ -45,11 +45,11 @@ public class Caneta {
         this.codigo = codigo;
     }
 
-    public String getModelo() {
+    public Modelo getModelo() {
         return modelo;
     }
 
-    public void setModelo(String modelo) {
+    public void setModelo(Modelo modelo) {
         this.modelo = modelo;
     }
 
