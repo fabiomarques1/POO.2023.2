@@ -1,6 +1,8 @@
 
 package dao;
 
+import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 import modelo.Caneta;
 

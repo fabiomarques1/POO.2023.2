@@ -125,7 +125,44 @@ public class CanetaDAOJDBC implements CanetaDAO {
 
     @Override
     public Caneta listar(int id) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        StringBuilder sqlBuilder = new StringBuilder();
+        sqlBuilder
+                .append("SELECT c.codigo, c.codigo_modelo, m.descricao, c.cor, c.ponta, c.carga, c.tampada ")
+                .append("FROM caneta c ")
+                .append("INNER JOIN modelo m ON (c.codigo_modelo = m.codigo) ")
+                .append("WHERE c.codigo = ?");
+        String select = sqlBuilder.toString();
+        
+        Caneta caneta = null;
+
+        try {       
+            rset = DAOGenerico.executarConsulta(select, id);
+
+
+            while (rset.next()) {
+
+                caneta = new Caneta();
+                caneta.setCodigo(rset.getInt("c.codigo"));
+                
+                caneta.setCor(rset.getString("c.cor"));
+                caneta.setPonta(rset.getFloat("c.ponta"));
+                caneta.setCarga(rset.getInt("c.carga"));
+                caneta.setTampada(rset.getBoolean("c.tampada"));
+                
+                Modelo modelo = new Modelo();
+                modelo.setCodigo(rset.getInt("c.codigo_modelo"));
+                modelo.setDescricao(rset.getString("m.descricao"));
+                
+                caneta.setModelo(modelo);
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            fecharConexao();
+        }
+
+        return caneta;        
     }
     
     private void fecharConexao() {

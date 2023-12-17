@@ -22,14 +22,14 @@ public class frmListaCaneta extends javax.swing.JFrame {
 
     Connection conexao = null;
     CanetaDAO canetaDAO = DAOFactory.criarCanetaDAO();
-    private DefaultTableModel modelo = null;
+    private DefaultTableModel tableModel = null;
     
     public frmListaCaneta() {
         initComponents();
         CustomRenderer customRenderer = new CustomRenderer();
         customRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
         tblCaneta.getColumnModel().getColumn(3).setCellRenderer(customRenderer);
-        modelo = (DefaultTableModel) tblCaneta.getModel();
+        tableModel = (DefaultTableModel) tblCaneta.getModel();
         try {
             conexao = DAOGenerico.getConexao();
         } catch (Exception ex) {
@@ -40,10 +40,10 @@ public class frmListaCaneta extends javax.swing.JFrame {
     }   
    
     private void preencherTabela() {
-        modelo.getDataVector().clear();
+        tableModel.getDataVector().clear();
         try {
             for (Caneta caneta : canetaDAO.listar()) {
-                modelo.addRow(new Object[]{caneta.getCodigo(), 
+                tableModel.addRow(new Object[]{caneta.getCodigo(), 
                                             caneta.getModelo().getDescricao(), 
                                             caneta.getCor(),
                                             caneta.getPonta(),
@@ -58,11 +58,11 @@ public class frmListaCaneta extends javax.swing.JFrame {
     
     private void apagar() {
         try {
-            Integer codigo = (Integer) modelo.getValueAt(tblCaneta.getSelectedRow(), 0);
+            Integer codigo = (Integer) tableModel.getValueAt(tblCaneta.getSelectedRow(), 0);
 
             int linha = canetaDAO.apagar(codigo);
             if (linha > 0) {
-                modelo.removeRow(tblCaneta.getSelectedRow());
+                tableModel.removeRow(tblCaneta.getSelectedRow());
                 JOptionPane.showMessageDialog(this, "Item excluído com sucesso!");
             } else {
                 JOptionPane.showMessageDialog(this, "Erro ao excluir.");
@@ -75,20 +75,8 @@ public class frmListaCaneta extends javax.swing.JFrame {
     
     private void editar() {
         try {
-            Integer codigo = (Integer) modelo.getValueAt(tblCaneta.getSelectedRow(), 0);
-            String modeloCaneta = (String) modelo.getValueAt(tblCaneta.getSelectedRow(), 1);
-            String cor = (String) modelo.getValueAt(tblCaneta.getSelectedRow(), 2);
-            Float ponta = (Float) modelo.getValueAt(tblCaneta.getSelectedRow(), 3);
-            int carga = (Integer) modelo.getValueAt(tblCaneta.getSelectedRow(), 4);
-            Boolean tampada = (Boolean) modelo.getValueAt(tblCaneta.getSelectedRow(), 5);
-           
-            Caneta caneta = new Caneta();
-            caneta.setCodigo(codigo);
-            caneta.setModelo(modeloCaneta);
-            caneta.setCor(cor);
-            caneta.setPonta(ponta);
-            caneta.setCarga(carga);
-            caneta.setTampada(tampada);
+            Integer codigo = (Integer) tableModel.getValueAt(tblCaneta.getSelectedRow(), 0);
+            Caneta caneta = canetaDAO.listar(codigo);
 
             new frmCaneta(caneta).setVisible(true);
             

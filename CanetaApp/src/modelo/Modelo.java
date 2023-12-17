@@ -25,7 +25,7 @@ public class Modelo {
 
     @Override
     public String toString() {
-        return "Modelo{" + "codigo=" + codigo + ", descricao=" + descricao + '}';
+        return  descricao;
     }
 
     @Override

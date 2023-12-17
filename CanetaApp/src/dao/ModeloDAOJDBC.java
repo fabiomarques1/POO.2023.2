@@ -57,7 +57,7 @@ public class ModeloDAOJDBC implements ModeloDAO {
     }
 
     @Override
-    public int apagar(int codigo) {
+    public int apagar(int codigo) throws ClassNotFoundException, SQLException, SQLIntegrityConstraintViolationException{
         StringBuilder sqlBuilder = new StringBuilder();
         sqlBuilder
                 .append("DELETE FROM modelo ")
@@ -65,13 +65,9 @@ public class ModeloDAOJDBC implements ModeloDAO {
         
         String delete = sqlBuilder.toString();
         int linha = 0;
-        try {           
-            linha = DAOGenerico.executarComando(delete, codigo);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            fecharConexao();
-        }
+                 
+         linha = DAOGenerico.executarComando(delete, codigo);
+    
 
         return linha;
     }

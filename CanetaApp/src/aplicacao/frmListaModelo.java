@@ -8,6 +8,7 @@ import dao.ModeloDAO;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.sql.Connection;
+import java.sql.SQLIntegrityConstraintViolationException;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import modelo.Caneta;
@@ -58,9 +59,12 @@ public class frmListaModelo extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Erro ao excluir.");
             }
 
-        } catch (Exception e) {
+        }  catch (SQLIntegrityConstraintViolationException integrity) {
+            JOptionPane.showMessageDialog(this, "Não pode apagar. Este modelo está sendo usado em Caneta");
+            integrity.printStackTrace();
+        }  catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Por favor, selecionar uma linha da tabela");
-        } 
+        }
     }
     
     private void editar() {

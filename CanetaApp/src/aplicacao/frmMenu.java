@@ -26,12 +26,15 @@ public class frmMenu extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jMenuItem1 = new javax.swing.JMenuItem();
         jPanel1 = new javax.swing.JPanel();
         jMenuBar1 = new javax.swing.JMenuBar();
         menuOpcao = new javax.swing.JMenu();
         itemCaneta = new javax.swing.JMenuItem();
         itemModelo = new javax.swing.JMenuItem();
-        menuSair = new javax.swing.JMenu();
+        itemSair = new javax.swing.JMenuItem();
+
+        jMenuItem1.setText("jMenuItem1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -64,10 +67,15 @@ public class frmMenu extends javax.swing.JFrame {
         });
         menuOpcao.add(itemModelo);
 
-        jMenuBar1.add(menuOpcao);
+        itemSair.setText("Sair");
+        itemSair.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                itemSairActionPerformed(evt);
+            }
+        });
+        menuOpcao.add(itemSair);
 
-        menuSair.setText("Sair");
-        jMenuBar1.add(menuSair);
+        jMenuBar1.add(menuOpcao);
 
         setJMenuBar(jMenuBar1);
 
@@ -98,6 +106,10 @@ public class frmMenu extends javax.swing.JFrame {
     private void itemModeloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemModeloActionPerformed
         new frmListaModelo().setVisible(true);
     }//GEN-LAST:event_itemModeloActionPerformed
+
+    private void itemSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemSairActionPerformed
+        System.exit(0);
+    }//GEN-LAST:event_itemSairActionPerformed
 
     /**
      * @param args the command line arguments
@@ -137,9 +149,10 @@ public class frmMenu extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem itemCaneta;
     private javax.swing.JMenuItem itemModelo;
+    private javax.swing.JMenuItem itemSair;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JMenu menuOpcao;
-    private javax.swing.JMenu menuSair;
     // End of variables declaration//GEN-END:variables
 }

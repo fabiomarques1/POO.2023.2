@@ -6,8 +6,14 @@ package aplicacao;
 
 import dao.CanetaDAO;
 import dao.DAOFactory;
+import dao.ModeloDAO;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
+import java.util.Vector;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import modelo.Caneta;
+import modelo.Modelo;
 
 /**
  *
@@ -17,15 +23,17 @@ public class frmCaneta extends javax.swing.JFrame {
 
     private Caneta caneta;
     CanetaDAO canetaDAO = DAOFactory.criarCanetaDAO();
+    ModeloDAO modeloDAO = DAOFactory.criarModeloDAO();
     
     public frmCaneta(Caneta caneta) {
         initComponents();
         
+        carregarCombo();
         
         this.caneta = caneta;
         if (this.caneta != null) {
             btnSalvar.setText("Editar");
-            txtModelo.setText(this.caneta.getModelo());
+            //txtModelo.setText(this.caneta.getModelo());
             
             String cor = this.caneta.getCor();
             if (cor.equalsIgnoreCase(rbAzul.getText())) {
@@ -62,9 +70,21 @@ public class frmCaneta extends javax.swing.JFrame {
         }
     }
     
+    private void carregarCombo() {
+        try {
+            Vector<Modelo> modelos = new Vector<>(modeloDAO.listar());
+            DefaultComboBoxModel comboModel = new DefaultComboBoxModel(modelos);
+            cbModelo.setModel(comboModel);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Erro ao carregar a lista de Modelos");
+        }
+    }
+    
     private void inserir() {
         Caneta canetaInserida = new Caneta();
-        canetaInserida.setModelo(txtModelo.getText());
+        canetaInserida.setModelo((Modelo) cbModelo.getSelectedItem());
+        
         if (rbAzul.isSelected()) {
             canetaInserida.setCor(rbAzul.getText());
         } else if (rbVermelha.isSelected()) {
@@ -93,13 +113,13 @@ public class frmCaneta extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Caneta inserida com sucesso!");
         } else {
             JOptionPane.showMessageDialog(this, "Erro ao inserir Caneta.");
-        }
+        } 
     }
     
     private void editar() {
         Caneta canetaEditada = new Caneta();
         canetaEditada.setCodigo(caneta.getCodigo());
-        canetaEditada.setModelo(txtModelo.getText());
+        canetaEditada.setModelo((Modelo) cbModelo.getSelectedItem());
         if (rbAzul.isSelected()) {
             canetaEditada.setCor(rbAzul.getText());
         } else if (rbVermelha.isSelected()) {
@@ -154,7 +174,6 @@ public class frmCaneta extends javax.swing.JFrame {
         buttonGroup3 = new javax.swing.ButtonGroup();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        txtModelo = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         rbAzul = new javax.swing.JRadioButton();
         rbVermelha = new javax.swing.JRadioButton();
@@ -173,6 +192,7 @@ public class frmCaneta extends javax.swing.JFrame {
         rbTampada = new javax.swing.JRadioButton();
         btnSalvar = new javax.swing.JButton();
         btnCancelar = new javax.swing.JButton();
+        cbModelo = new javax.swing.JComboBox<>();
         jPanel2 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
 
@@ -287,22 +307,6 @@ public class frmCaneta extends javax.swing.JFrame {
                         .addGap(6, 6, 6)
                         .addComponent(lblCarga))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(10, 10, 10)
-                        .addComponent(jLabel2)
-                        .addGap(17, 17, 17)
-                        .addComponent(rbAzul)
-                        .addGap(6, 6, 6)
-                        .addComponent(rbVermelha)
-                        .addGap(6, 6, 6)
-                        .addComponent(rbPreta)
-                        .addGap(18, 18, 18)
-                        .addComponent(rbVerde))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addComponent(jLabel1)
-                        .addGap(6, 6, 6)
-                        .addComponent(txtModelo, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(6, 6, 6)
                         .addComponent(jLabel5)
                         .addGap(6, 6, 6)
@@ -313,18 +317,32 @@ public class frmCaneta extends javax.swing.JFrame {
                                 .addComponent(btnSalvar)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(rbDestampada))))
+                            .addComponent(rbDestampada)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(10, 10, 10)
+                        .addComponent(jLabel2)
+                        .addGap(17, 17, 17)
+                        .addComponent(rbAzul)
+                        .addGap(6, 6, 6)
+                        .addComponent(rbVermelha)
+                        .addGap(6, 6, 6)
+                        .addComponent(rbPreta)
+                        .addGap(18, 18, 18)
+                        .addComponent(rbVerde))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cbModelo, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(18, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(6, 6, 6)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(3, 3, 3)
-                        .addComponent(jLabel1))
-                    .addComponent(txtModelo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(cbModelo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(17, 17, 17)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -492,6 +510,7 @@ public class frmCaneta extends javax.swing.JFrame {
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.ButtonGroup buttonGroup2;
     private javax.swing.ButtonGroup buttonGroup3;
+    private javax.swing.JComboBox<String> cbModelo;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -512,6 +531,5 @@ public class frmCaneta extends javax.swing.JFrame {
     private javax.swing.JRadioButton rbTampada;
     private javax.swing.JRadioButton rbVerde;
     private javax.swing.JRadioButton rbVermelha;
-    private javax.swing.JTextField txtModelo;
     // End of variables declaration//GEN-END:variables
 }
